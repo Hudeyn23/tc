@@ -1,8 +1,17 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TransportCompany {
-    public void startCompany(String configName) {
+    private Depot depo;
+    private List<Thread> consumerAndFactory;
+
+    public TransportCompany() {
+        consumerAndFactory = new ArrayList<>();
+    }
+
+    public void startCompany() {
         Config config = new Config();
         try {
             config.parseJson();
@@ -15,10 +24,12 @@ public class TransportCompany {
                 endWarehouseMap.put(item, endWarehouse);
                 for (int i = 0; i < config.getFactoryCount(item); i++) {
                     Factory factory = new Factory(item, warehouse, config.getTimeToCreateItem(item));
+                    consumerAndFactory.add(factory);
                     factory.start();
                 }
                 for (int i = 0; i < config.getConsumerCount(item); i++) {
                     Consumer consumer = new Consumer(item, endWarehouse, config.getTimeToConsume(item));
+                    consumerAndFactory.add(consumer);
                     consumer.start();
                 }
             }
@@ -27,12 +38,17 @@ public class TransportCompany {
             Railway fromStartToEnd = new Railway(config.getTrackFromStartToDist(), config.getDistance());
             Railway fromEndToStart = new Railway(config.getTrackFromDistToStart(), config.getDistance());
             RailwaySystem system = new RailwaySystem(start, end, fromStartToEnd, fromEndToStart);
-            Depot depo = new Depot(config, system);
+            depo = new Depot(config, system);
             for (String trainName : config.getListOfTrains()) {
                 depo.addNewOrder(trainName);
             }
         } catch (ConfigException e) {
 
         }
+    }
+
+    public void stopCompany() throws InterruptedException {
+        depo.stop();
+        consumerAndFactory.forEach(Thread::interrupt);
     }
 }

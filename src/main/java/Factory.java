@@ -18,8 +18,10 @@ public class Factory extends Thread {
                 Log.logInfo("Factory create " + itemName);
                 warehouse.addItem(item);
             } catch (InterruptedException e) {
+                Log.logInfo("Factory of "+ itemName + " has been stopped");
                 return;
             }
         }
+        Log.logInfo("Factory of "+ itemName + " has been stopped");
     }
 }

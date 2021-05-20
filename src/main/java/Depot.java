@@ -1,4 +1,3 @@
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
@@ -38,6 +37,15 @@ public class Depot {
         } catch (ConfigException e) {
 
         }
+    }
+
+    public void stop() throws InterruptedException {
+        executor.shutdownNow();
+        if (executor.awaitTermination(5, TimeUnit.SECONDS)) {
+            trains.forEach(Thread::interrupt);
+        }
+        Log.logInfo("Depot has been stopped");
+
     }
 }
 
