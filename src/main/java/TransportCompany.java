@@ -19,6 +19,7 @@ public class TransportCompany {
                 }
                 for (int i = 0; i < config.getConsumerCount(item); i++) {
                     Consumer consumer = new Consumer(item, endWarehouse, config.getTimeToConsume(item));
+                    consumer.start();
                 }
             }
             Station start = new Station(config.getStartLoadTrack(), startWarehouseMap);
@@ -27,7 +28,6 @@ public class TransportCompany {
             Railway fromEndToStart = new Railway(config.getTrackFromDistToStart(), config.getDistance());
             RailwaySystem system = new RailwaySystem(start, end, fromStartToEnd, fromEndToStart);
             Depot depo = new Depot(config, system);
-            depo.start();
             for (String trainName : config.getListOfTrains()) {
                 depo.addNewOrder(trainName);
             }

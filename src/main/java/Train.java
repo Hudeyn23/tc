@@ -51,7 +51,7 @@ public class Train extends Thread {
     public void run() {
         long startTime = Calendar.getInstance().getTimeInMillis() / 1000;
         try {
-            while ((Calendar.getInstance().getTimeInMillis()/1000 - startTime) < amortizationTime) {
+            while ((Calendar.getInstance().getTimeInMillis() / 1000 - startTime) < amortizationTime) {
                 try {
                     load(railwaySystem.getDepart());
                     railwaySystem.getRoadToDest().getRailway();
