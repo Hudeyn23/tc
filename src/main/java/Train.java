@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class Train extends Thread {
+    private boolean shutdown;
     private String name;
     private int speed;
     private int amortizationTime;
@@ -10,6 +11,7 @@ public class Train extends Thread {
     Depot depo;
 
     public Train(String name, int speed, int amortizationTime, Config config, RailwaySystem railwaySystem, Depot depo) {
+        shutdown = false;
         this.name = name;
         this.speed = speed;
         this.amortizationTime = amortizationTime;
@@ -52,34 +54,32 @@ public class Train extends Thread {
         long startTime = Calendar.getInstance().getTimeInMillis() / 1000;
         try {
             while ((Calendar.getInstance().getTimeInMillis() / 1000 - startTime) < amortizationTime) {
-                try {
-                    load(railwaySystem.getDepart());
-                    railwaySystem.getRoadToDest().getRailway();
-                    Log.logInfo("Train  " + name + "start moving");
-                    int dist = 0;
-                    while (dist < railwaySystem.getRoadToDest().getDistance()) {
-                        dist += speed;
-                        Thread.sleep(1000);
-                    }
-                    Log.logInfo("Train  " + name + "arrive");
-                    railwaySystem.getRoadToDest().freeRailway();
-                    unload(railwaySystem.getArrive());
-                    railwaySystem.getRoadBack().getRailway();
-                    Log.logInfo("Train  " + name + "start moving back");
-                    dist = 0;
-                    while (dist < railwaySystem.getRoadBack().getDistance()) {
-                        dist += speed;
-                        Thread.sleep(1000);
-                    }
-                    railwaySystem.getRoadBack().freeRailway();
-                    Log.logInfo("Train  " + name + "arrive back");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                load(railwaySystem.getDepart());
+                railwaySystem.getRoadToDest().getRailway();
+                Log.logInfo("Train  " + name + "start moving");
+                int dist = 0;
+                while (dist < railwaySystem.getRoadToDest().getDistance()) {
+                    dist += speed;
+                    Thread.sleep(1000);
                 }
+                Log.logInfo("Train  " + name + "arrive");
+                railwaySystem.getRoadToDest().freeRailway();
+                unload(railwaySystem.getArrive());
+                railwaySystem.getRoadBack().getRailway();
+                Log.logInfo("Train  " + name + "start moving back");
+                dist = 0;
+                while (dist < railwaySystem.getRoadBack().getDistance()) {
+                    dist += speed;
+                    Thread.sleep(1000);
+                }
+                railwaySystem.getRoadBack().freeRailway();
+                Log.logInfo("Train  " + name + "arrive back");
             }
-            depo.addNewOrder(name);
+                depo.addNewOrder(name);
+        } catch (InterruptedException e) {
+            Log.logInfo("Train " + name + "is stopped");
         } catch (ConfigException e) {
-
+            Log.logError("Can`t get config data for train" + name);
         }
     }
 }

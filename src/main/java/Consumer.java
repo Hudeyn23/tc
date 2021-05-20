@@ -10,14 +10,14 @@ public class Consumer extends Thread {
 
     @Override
     public void run() {
-        while (!isInterrupted()) {
             try {
-                Thread.sleep(itemConsumeTime);
-                Item item = warehouse.getItem();
-                Log.logInfo("Consumer consume "+ name);
+                while (true) {
+                    Thread.sleep(itemConsumeTime);
+                    Item item = warehouse.getItem();
+                    Log.logInfo("Consumer consume " + name);
+                }
             } catch (InterruptedException e) {
-                return;
+                Log.logInfo("Consumer of " + name + " has been stopped" );
             }
-        }
     }
 }
